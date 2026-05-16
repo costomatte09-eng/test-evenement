@@ -72,12 +72,29 @@
       margin: 0 auto;
     }
 
+    /* ── TITRE DE SECTION ── */
+    .section-titre {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-titre.passe {
+      color: var(--muted);
+      margin-top: 60px;
+    }
+
     /* ── ÉTAT CHARGEMENT / VIDE ── */
     .etat {
       text-align: center;
-      padding: 80px 20px;
+      padding: 60px 20px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .spinner {
@@ -93,7 +110,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── GRILLE CARTES ── */
-    #liste-evenements {
+    .grille {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 2px;
@@ -112,12 +129,18 @@
 
     .carte:hover { border-color: var(--accent); }
 
+    .carte.passe {
+      opacity: 0.5;
+      filter: grayscale(0.4);
+    }
+
+    .carte.passe:hover { border-color: var(--muted); opacity: 0.7; }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Délai en cascade */
     .carte:nth-child(1) { animation-delay: 0.05s; }
     .carte:nth-child(2) { animation-delay: 0.10s; }
     .carte:nth-child(3) { animation-delay: 0.15s; }
@@ -155,10 +178,15 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid var(--accent);
       padding: 2px 8px;
       width: fit-content;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .carte-tag.passe {
+      border-color: var(--muted);
+      color: var(--muted);
     }
 
     .carte-titre {
@@ -188,12 +216,13 @@
       text-align: center;
       font-size: 0.75rem;
       color: var(--muted);
+      margin-top: 80px;
     }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       header, main { padding: 40px 20px; }
-      #liste-evenements { grid-template-columns: 1fr; }
+      .grille { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -203,22 +232,29 @@
   <header>
     <div class="header-left">
       <p class="label">Comité Social et Économique</p>
-      <h1>Prochains<br>événements</h1>
+      <h1>Nos<br>événements</h1>
     </div>
     <div class="header-right">
-      Page de test<br>Données en temps réel via Airtable
+      Données en temps réel<br>via Airtable
     </div>
   </header>
 
   <!-- MAIN -->
   <main>
-    <div id="liste-evenements">
-      <!-- chargement initial -->
-      <div class="etat" id="etat-msg">
+
+    <!-- SECTION À VENIR -->
+    <h2 class="section-titre">Prochains événements</h2>
+    <div class="grille" id="liste-avenir">
+      <div class="etat">
         <div class="spinner"></div>
-        Chargement des événements…
+        Chargement…
       </div>
     </div>
+
+    <!-- SECTION PASSÉ (cachée si vide) -->
+    <h2 class="section-titre passe" id="titre-passe" style="display:none;">Événements passés</h2>
+    <div class="grille" id="liste-passe"></div>
+
   </main>
 
   <!-- FOOTER -->
@@ -229,16 +265,49 @@
   <!-- SCRIPT AIRTABLE -->
   <script>
     // ── CONFIG ─────────────────────────────────────────────
-    const AT_TOKEN = "patTfBetA6dokF8rI.3458256cc9fc7255b66e24e8b878920b06b878651aa602942c61b5e80dba1399"
+    const AT_TOKEN = "TON_NOUVEAU_TOKEN_ICI"
     const AT_BASE  = "app5MSXN8N1750gjd"
     const AT_TABLE = "Table 1"
     // ────────────────────────────────────────────────────────
 
-    const container = document.getElementById("liste-evenements")
-    const etatMsg   = document.getElementById("etat-msg")
+    const listeAvenir = document.getElementById("liste-avenir")
+    const listePasse  = document.getElementById("liste-passe")
+    const titrePasse  = document.getElementById("titre-passe")
 
     const url = `https://api.airtable.com/v0/${AT_BASE}/${encodeURIComponent(AT_TABLE)}?sort[0][field]=Date&sort[0][direction]=asc`
 
+    // ── Fonction qui génère une carte ──────────────────────
+    function creerCarte(record, estPasse) {
+      const e = record.fields
+
+      const dateObj = e.Date ? new Date(e.Date) : null
+      const dateStr = dateObj ? dateObj.toLocaleDateString("fr-FR", {
+        weekday: "long", day: "numeric", month: "long", year: "numeric"
+      }) : "Date à confirmer"
+      const heureStr = dateObj ? dateObj.toLocaleTimeString("fr-FR", {
+        hour: "2-digit", minute: "2-digit"
+      }) : ""
+
+      const imgUrl = e.Attachments && e.Attachments[0] ? e.Attachments[0].url : null
+      const mediaHtml = imgUrl
+        ? `<img class="carte-image" src="${imgUrl}" alt="${e.Name || 'Événement'}" loading="lazy">`
+        : `<div class="carte-image-placeholder">📅</div>`
+
+      const carte = document.createElement("article")
+      carte.className = estPasse ? "carte passe" : "carte"
+      carte.innerHTML = `
+        ${mediaHtml}
+        <div class="carte-body">
+          <span class="carte-tag ${estPasse ? 'passe' : ''}">${e.Status || "A venir"}</span>
+          <h3 class="carte-titre">${e.Name || "Événement"}</h3>
+          <p class="carte-date">📅 ${dateStr}${heureStr ? ' · ' + heureStr : ''}</p>
+          ${e.Notes ? `<p class="carte-notes">${e.Notes}</p>` : ""}
+        </div>
+      `
+      return carte
+    }
+
+    // ── Fetch Airtable ─────────────────────────────────────
     fetch(url, {
       headers: { Authorization: `Bearer ${AT_TOKEN}` }
     })
@@ -247,61 +316,28 @@
       return r.json()
     })
     .then(data => {
-      const aujourd_hui = new Date()
-      aujourd_hui.setHours(0, 0, 0, 0)
+      const records = data.records || []
 
-      const evenements = (data.records || []).filter(r => {
-        const dateEvt = r.fields.Date ? new Date(r.fields.Date) : null
-        // Filtre : status "A venir" (ou vide) + date future OR status "Passé" + date passée
-const statusOk = !r.fields.Status || r.fields.Status === "A venir" || r.fields.Status === "Passé";
+      // Trier par status
+      const avenir = records.filter(r => r.fields.Status === "A venir")
+      const passe  = records.filter(r => r.fields.Status === "Passé")
 
-return statusOk && dateEvt && (
-  (r.fields.Status === "Passé" ? dateEvt < aujourd_hui : dateEvt >= aujourd_hui)
-);
-})
-      // Vider le spinner
-      container.innerHTML = ""
-
-      if (evenements.length === 0) {
-        container.innerHTML = `<div class="etat">Aucun événement à venir pour le moment.</div>`
-        return
+      // ── Section À venir
+      listeAvenir.innerHTML = ""
+      if (avenir.length === 0) {
+        listeAvenir.innerHTML = `<div class="etat">Aucun événement à venir pour le moment.</div>`
+      } else {
+        avenir.forEach(r => listeAvenir.appendChild(creerCarte(r, false)))
       }
 
-      evenements.forEach(record => {
-        const e = record.fields
-
-        // Date formatée
-        const dateObj = new Date(e.Date)
-        const dateStr = dateObj.toLocaleDateString("fr-FR", {
-          weekday: "long", day: "numeric", month: "long", year: "numeric"
-        })
-        const heureStr = dateObj.toLocaleTimeString("fr-FR", {
-          hour: "2-digit", minute: "2-digit"
-        })
-
-        // Image
-        const imgUrl = e.Attachments && e.Attachments[0] ? e.Attachments[0].url : null
-        const mediaHtml = imgUrl
-          ? `<img class="carte-image" src="${imgUrl}" alt="${e.Name || 'Événement'}" loading="lazy">`
-          : `<div class="carte-image-placeholder">📅</div>`
-
-        // Carte
-        const carte = document.createElement("article")
-        carte.className = "carte"
-        carte.innerHTML = `
-          ${mediaHtml}
-          <div class="carte-body">
-            <span class="carte-tag">${e.Status || "À venir"}</span>
-            <h2 class="carte-titre">${e.Name || "Événement"}</h2>
-            <p class="carte-date">📅 ${dateStr} · ${heureStr}</p>
-            ${e.Notes ? `<p class="carte-notes">${e.Notes}</p>` : ""}
-          </div>
-        `
-        container.appendChild(carte)
-      })
+      // ── Section Passé (affichée uniquement si données)
+      if (passe.length > 0) {
+        titrePasse.style.display = "block"
+        passe.forEach(r => listePasse.appendChild(creerCarte(r, true)))
+      }
     })
     .catch(err => {
-      container.innerHTML = `<div class="etat">❌ Impossible de charger les événements.<br><small style="margin-top:8px;display:block">${err.message}</small></div>`
+      listeAvenir.innerHTML = `<div class="etat">❌ Impossible de charger les événements.<br><small style="margin-top:8px;display:block">${err.message}</small></div>`
       console.error("Airtable fetch error:", err)
     })
   </script>
