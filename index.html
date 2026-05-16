@@ -252,11 +252,13 @@
 
       const evenements = (data.records || []).filter(r => {
         const dateEvt = r.fields.Date ? new Date(r.fields.Date) : null
-        // Filtre : status "A venir" (ou vide) + date future
-        const statusOk = !r.fields.Status || r.fields.Status === "A venir"
-        return statusOk && dateEvt && dateEvt >= aujourd_hui
-      })
+        // Filtre : status "A venir" (ou vide) + date future OR status "Passé" + date passée
+const statusOk = !r.fields.Status || r.fields.Status === "A venir" || r.fields.Status === "Passé";
 
+return statusOk && dateEvt && (
+  (r.fields.Status === "Passé" ? dateEvt < aujourd_hui : dateEvt >= aujourd_hui)
+);
+})
       // Vider le spinner
       container.innerHTML = ""
 
