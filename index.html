@@ -3,71 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Événements CSE — Test</title>
+  <title>Événements CSE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600&family=Source+Sans+3:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     /* ── RESET & BASE ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0f0f0f;
-      --surface:  #1a1a1a;
-      --border:   #2a2a2a;
-      --accent:   #e8572a;  
-      --accent2:  #f0a500;
-      --text:     #f0ede8;
-      --muted:    #888;
-      --font-title: 'Syne', sans-serif;
-      --font-body:  'DM Sans', sans-serif;
+      --navy:      #1d3557;
+      --teal:      #29b5a8;
+      --green:     #3dab6b;
+      --blue:      #4a94d4;
+      --bg-teal:   #f0f9f7;
+      --bg-blue:   #f0f6ff;
+      --bg-green:  #f1fbf4;
+      --error:     #e05252;
+
+      --bg:        #f0f9f7;
+      --surface:   #ffffff;
+      --border:    rgba(29, 53, 87, 0.12);
+      --text:      #1d3557;
+      --muted:     #8a9bb0;
+
+      --font-title: 'Nunito Sans', sans-serif;
+      --font-body:  'Source Sans 3', sans-serif;
+
+      --radius-card: 8px;
+      --radius-btn:  6px;
+      --radius-icon: 4px;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
       font-family: var(--font-body);
+      font-size: 12px;
       min-height: 100vh;
     }
 
     /* ── HEADER ── */
     header {
-      padding: 60px 40px 40px;
-      border-bottom: 1px solid var(--border);
+      padding: 36px 40px 28px;
+      border-bottom: 0.5px solid var(--border);
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
+      background: var(--surface);
     }
 
     .header-left .label {
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.15em;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
+      color: var(--teal);
+      margin-bottom: 8px;
     }
 
     header h1 {
       font-family: var(--font-title);
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -0.02em;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--navy);
     }
 
     .header-right {
-      font-size: 0.8rem;
+      font-size: 11px;
       color: var(--muted);
       text-align: right;
+      line-height: 1.6;
     }
 
     /* ── MAIN ── */
     main {
-      padding: 60px 40px;
+      padding: 28px 40px;
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -77,105 +92,136 @@
       text-align: center;
       padding: 80px 20px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 12px;
+      grid-column: 1 / -1;
     }
 
     .spinner {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border: 2px solid var(--border);
-      border-top-color: var(--accent);
+      border-top-color: var(--teal);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto 20px;
+      margin: 0 auto 16px;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── GRILLE CARTES ── */
+    /* ── GRILLE ── */
     #liste-evenements {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
     }
 
     /* ── CARTE ── */
     .carte {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-card);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: border-color 0.2s;
-      animation: fadeUp 0.4s ease both;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      animation: fadeUp 0.35s ease both;
     }
 
-    .carte:hover { border-color: var(--accent); }
+    .carte:hover {
+      border-color: var(--teal);
+      box-shadow: 0 4px 16px rgba(41, 181, 168, 0.12);
+    }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Délai en cascade */
     .carte:nth-child(1) { animation-delay: 0.05s; }
     .carte:nth-child(2) { animation-delay: 0.10s; }
     .carte:nth-child(3) { animation-delay: 0.15s; }
     .carte:nth-child(4) { animation-delay: 0.20s; }
     .carte:nth-child(5) { animation-delay: 0.25s; }
 
+    /* ── CARTE PASSÉ ── */
+    .carte.passe {
+      opacity: 0.55;
+      filter: grayscale(0.5);
+      pointer-events: none;
+      border-color: rgba(29, 53, 87, 0.07);
+      background: #f7f8fa;
+    }
+
+    .carte.passe .carte-tag {
+      color: var(--muted);
+      border-color: var(--muted);
+    }
+
+    .carte.passe .carte-image {
+      filter: grayscale(0.6);
+    }
+
+    .carte.passe .carte-image-placeholder {
+      background: #eaedf1;
+      color: var(--muted);
+    }
+
+    /* ── IMAGE ── */
     .carte-image {
       width: 100%;
-      height: 200px;
+      height: 180px;
       object-fit: cover;
       display: block;
     }
 
     .carte-image-placeholder {
       width: 100%;
-      height: 200px;
-      background: var(--border);
+      height: 180px;
+      background: var(--bg-teal);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
+      font-size: 2rem;
     }
 
+    /* ── CARTE BODY ── */
     .carte-body {
-      padding: 24px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       flex: 1;
     }
 
     .carte-tag {
       display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 2px 8px;
+      color: var(--teal);
+      border: 0.5px solid var(--teal);
+      border-radius: var(--radius-icon);
+      padding: 2px 7px;
       width: fit-content;
     }
 
     .carte-titre {
       font-family: var(--font-title);
-      font-size: 1.15rem;
-      font-weight: 700;
-      line-height: 1.2;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--navy);
     }
 
     .carte-date {
-      font-size: 0.8rem;
-      color: var(--accent2);
+      font-size: 11px;
+      color: var(--blue);
       font-weight: 500;
     }
 
     .carte-notes {
-      font-size: 0.88rem;
+      font-size: 11px;
       color: var(--muted);
       line-height: 1.6;
       flex: 1;
@@ -183,16 +229,17 @@
 
     /* ── FOOTER ── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 30px 40px;
+      border-top: 0.5px solid var(--border);
+      padding: 22px 40px;
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 11px;
       color: var(--muted);
+      background: var(--surface);
     }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
-      header, main { padding: 40px 20px; }
+      header, main { padding: 24px 16px; }
       #liste-evenements { grid-template-columns: 1fr; }
     }
   </style>
@@ -203,7 +250,7 @@
   <header>
     <div class="header-left">
       <p class="label">Comité Social et Économique</p>
-      <h1>Prochains<br>événements</h1>
+      <h1>Prochains événements</h1>
     </div>
     <div class="header-right">
       Page de test<br>Données en temps réel via Airtable
@@ -213,7 +260,6 @@
   <!-- MAIN -->
   <main>
     <div id="liste-evenements">
-      <!-- chargement initial -->
       <div class="etat" id="etat-msg">
         <div class="spinner"></div>
         Chargement des événements…
@@ -228,14 +274,13 @@
 
   <!-- SCRIPT AIRTABLE -->
   <script>
-    // ── CONFIG ─────────────────────────────────────────────
+    // ── CONFIG ──────────────────────────────────────────────
     const AT_TOKEN = "patTfBetA6dokF8rI.3458256cc9fc7255b66e24e8b878920b06b878651aa602942c61b5e80dba1399"
     const AT_BASE  = "app5MSXN8N1750gjd"
     const AT_TABLE = "Table 1"
     // ────────────────────────────────────────────────────────
 
     const container = document.getElementById("liste-evenements")
-    const etatMsg   = document.getElementById("etat-msg")
 
     const url = `https://api.airtable.com/v0/${AT_BASE}/${encodeURIComponent(AT_TABLE)}?sort[0][field]=Date&sort[0][direction]=asc`
 
@@ -251,14 +296,12 @@
       aujourd_hui.setHours(0, 0, 0, 0)
 
       const evenements = (data.records || []).filter(r => {
-        const dateEvt = r.fields.Date ? new Date(r.fields.Date) : null
-        // Filtre : status "A venir" (ou vide) + date future
-const statusOk = !r.fields.Status || r.fields.Status === "A venir"
-const estPasse  = r.fields.Status === "Passé"
-return dateEvt && ((statusOk && dateEvt >= aujourd_hui) || estPasse)
+        const dateEvt  = r.fields.Date ? new Date(r.fields.Date) : null
+        const statusOk = !r.fields.Status || r.fields.Status === "A venir"
+        const estPasse  = r.fields.Status === "Passé"
+        return dateEvt && ((statusOk && dateEvt >= aujourd_hui) || estPasse)
       })
 
-      // Vider le spinner
       container.innerHTML = ""
 
       if (evenements.length === 0) {
@@ -267,26 +310,24 @@ return dateEvt && ((statusOk && dateEvt >= aujourd_hui) || estPasse)
       }
 
       evenements.forEach(record => {
-        const e = record.fields
+        const e        = record.fields
+        const estPasse = e.Status === "Passé"
 
-        // Date formatée
-        const dateObj = new Date(e.Date)
-        const dateStr = dateObj.toLocaleDateString("fr-FR", {
+        const dateObj  = new Date(e.Date)
+        const dateStr  = dateObj.toLocaleDateString("fr-FR", {
           weekday: "long", day: "numeric", month: "long", year: "numeric"
         })
         const heureStr = dateObj.toLocaleTimeString("fr-FR", {
           hour: "2-digit", minute: "2-digit"
         })
 
-        // Image
-        const imgUrl = e.Attachments && e.Attachments[0] ? e.Attachments[0].url : null
+        const imgUrl   = e.Attachments && e.Attachments[0] ? e.Attachments[0].url : null
         const mediaHtml = imgUrl
           ? `<img class="carte-image" src="${imgUrl}" alt="${e.Name || 'Événement'}" loading="lazy">`
           : `<div class="carte-image-placeholder">📅</div>`
 
-        // Carte
         const carte = document.createElement("article")
-        carte.className = "carte"
+        carte.className = `carte${estPasse ? " passe" : ""}`
         carte.innerHTML = `
           ${mediaHtml}
           <div class="carte-body">
