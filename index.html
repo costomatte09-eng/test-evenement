@@ -16,7 +16,7 @@
       --bg:       #0f0f0f;
       --surface:  #1a1a1a;
       --border:   #2a2a2a;
-      --accent:   #e8572a;
+      --accent:   #e8572a;  
       --accent2:  #f0a500;
       --text:     #f0ede8;
       --muted:    #888;
@@ -253,8 +253,9 @@
       const evenements = (data.records || []).filter(r => {
         const dateEvt = r.fields.Date ? new Date(r.fields.Date) : null
         // Filtre : status "A venir" (ou vide) + date future
-        const statusOk = !r.fields.Status || r.fields.Status === "A venir"
-        return statusOk && dateEvt && dateEvt >= aujourd_hui
+const statusOk = !r.fields.Status || r.fields.Status === "A venir"
+const estPasse  = r.fields.Status === "Passé"
+return dateEvt && ((statusOk && dateEvt >= aujourd_hui) || estPasse)
       })
 
       // Vider le spinner
